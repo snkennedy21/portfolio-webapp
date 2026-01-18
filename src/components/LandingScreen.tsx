@@ -1,12 +1,26 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 interface LandingScreenProps {
   onBegin: () => void;
 }
 
 export default function LandingScreen({ onBegin }: LandingScreenProps) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fafaf9] px-4">
+    <motion.div
+      className="absolute inset-0 min-h-screen flex flex-col items-center justify-center bg-[#fafaf9] px-4 z-20"
+      initial={{ scale: 1, opacity: 1 }}
+      exit={{
+        scale: 1.5,
+        opacity: 0,
+        filter: 'blur(10px)',
+      }}
+      transition={{
+        duration: 0.8,
+        ease: [0.4, 0, 0.2, 1],
+      }}
+    >
       <div className="text-center space-y-8">
         <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-[#18181b]">
           THE INTERVIEW
@@ -23,6 +37,6 @@ export default function LandingScreen({ onBegin }: LandingScreenProps) {
           Begin Interview
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

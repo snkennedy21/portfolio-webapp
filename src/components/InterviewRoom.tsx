@@ -3,6 +3,7 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import Message from './Message';
 import SuggestedQuestions from './SuggestedQuestions';
 import QuickLinks from './QuickLinks';
@@ -83,7 +84,21 @@ export default function InterviewRoom() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#fafaf9]">
+    <motion.div
+      className="absolute inset-0 flex flex-col h-screen bg-[#fafaf9] z-10"
+      initial={{
+        scale: 0.7,
+        opacity: 0,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+      }}
+      transition={{
+        duration: 0.8,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+    >
       {/* Header */}
       <header className="p-6 border-b border-[#e7e5e4] bg-white">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
@@ -175,6 +190,6 @@ export default function InterviewRoom() {
           <QuickLinks />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
