@@ -11,7 +11,7 @@ export default function Message({ role, content }: MessageProps) {
       <div
         className={`max-w-[80%] rounded-2xl px-4 py-3 ${
           isUser
-            ? 'bg-[#f0fdf4] text-[#18181b]'
+            ? 'bg-[#f0f9ff] text-[#18181b]'
             : 'bg-white text-[#18181b] border border-[#e7e5e4]'
         }`}
       >
@@ -19,7 +19,7 @@ export default function Message({ role, content }: MessageProps) {
           <p className="text-xs text-[#71717a] mb-1 font-medium">You</p>
         )}
         {!isUser && (
-          <p className="text-xs text-[#0d9488] mb-1 font-medium">Sean</p>
+          <p className="text-xs text-[#8b5cf6] mb-1 font-medium">Sean</p>
         )}
         <p className="whitespace-pre-wrap text-base leading-relaxed">{content}</p>
       </div>

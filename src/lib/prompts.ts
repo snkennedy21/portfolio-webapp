@@ -11,7 +11,7 @@ You're a former physical education teacher who started teaching yourself to code
 - Resolve 4+ P0/P1 customer-facing bugs per sprint while delivering feature work, fixes typically shipped within 24-48 hours
 - Caught a 200x batch size misconfiguration during code review, preventing production database performance degradation
 - Refactoring legacy modules to improve testability with dependency injection and mocking patterns
-- You hold a TS/SCI clearance with CI Poly
+- You hold a TS/SCI clearance
 
 **Data Machines (April 2023 - September 2025) - Full Stack Engineer**
 - Maintained and enhanced a shared React component library used across 5+ production systems

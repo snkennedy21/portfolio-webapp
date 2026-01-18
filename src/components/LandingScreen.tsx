@@ -18,7 +18,7 @@ export default function LandingScreen({ onBegin }: LandingScreenProps) {
 
         <button
           onClick={onBegin}
-          className="mt-8 px-8 py-3 bg-[#0d9488] text-white text-lg font-medium rounded-lg hover:bg-[#0f766e] transition-colors duration-200"
+          className="mt-8 px-8 py-3 bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white text-lg font-medium rounded-lg hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-200"
         >
           Begin Interview
         </button>

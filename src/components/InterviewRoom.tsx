@@ -87,13 +87,15 @@ export default function InterviewRoom() {
       {/* Header */}
       <header className="p-6 border-b border-[#e7e5e4] bg-white">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[#f5f5f4] border border-[#e7e5e4] flex items-center justify-center text-2xl text-[#71717a]">
-            SK
-          </div>
+          <img
+            src="/profile-picture.png"
+            alt="Sean Kennedy"
+            className="w-16 h-16 rounded-full object-cover border border-[#e7e5e4]"
+          />
           <div>
             <h1 className="text-xl font-semibold text-[#18181b]">Sean Kennedy</h1>
             <p className="text-[#71717a]">Full-Stack Developer</p>
-            <p className="text-sm text-[#0d9488]">Ready to answer your questions</p>
+            <p className="text-sm text-[#22d3ee]">Ready to answer your questions</p>
           </div>
         </div>
       </header>
@@ -123,7 +125,7 @@ export default function InterviewRoom() {
           {isLoading && messages[messages.length - 1]?.role === 'user' && (
             <div className="flex justify-start">
               <div className="bg-white border border-[#e7e5e4] rounded-2xl px-4 py-3">
-                <p className="text-xs text-[#0d9488] mb-1 font-medium">Sean</p>
+                <p className="text-xs text-[#8b5cf6] mb-1 font-medium">Sean</p>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce" />
                   <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce [animation-delay:0.1s]" />
@@ -158,12 +160,12 @@ export default function InterviewRoom() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Or ask your own question..."
-                className="flex-1 px-4 py-3 rounded-lg border border-[#e7e5e4] bg-white text-[#18181b] placeholder-[#71717a] focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:border-transparent"
+                className="flex-1 px-4 py-3 rounded-lg border border-[#e7e5e4] bg-white text-[#18181b] placeholder-[#71717a] focus:outline-none focus:ring-2 focus:ring-[#22d3ee] focus:border-transparent"
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="px-6 py-3 rounded-lg bg-[#0d9488] text-white font-medium hover:bg-[#0f766e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
               >
                 Ask
               </button>

@@ -37,7 +37,7 @@ export default function QuickLinks() {
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#e7e5e4] bg-white hover:bg-[#f5f5f4] hover:border-[#0d9488] text-[#18181b] text-sm font-medium transition-colors duration-150"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#e7e5e4] bg-white hover:bg-[#f5f5f4] hover:border-[#22d3ee] text-[#18181b] text-sm font-medium transition-colors duration-150"
         >
           {link.icon}
           {link.label}
