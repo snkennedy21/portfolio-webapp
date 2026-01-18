@@ -10,6 +10,8 @@ interface ResponseContentProps {
   followUpQuestions: string[];
   onFollowUp: (question: string) => void;
   onAskDifferent: () => void;
+  isLastQuestion?: boolean;
+  onFinish?: () => void;
 }
 
 const contentVariants = {
@@ -35,6 +37,8 @@ export default function ResponseContent({
   followUpQuestions,
   onFollowUp,
   onAskDifferent,
+  isLastQuestion = false,
+  onFinish,
 }: ResponseContentProps) {
   return (
     <motion.div
@@ -48,49 +52,55 @@ export default function ResponseContent({
         ease: [0.4, 0, 0.2, 1],
       }}
     >
-      <div className="max-w-3xl mx-auto space-y-6">
-        {/* User Question */}
-        <div className="flex justify-end">
-          <div className="max-w-[85%] bg-[#f0f9ff] rounded-2xl px-5 py-4">
-            <p className="text-xs text-[#71717a] mb-2 font-medium">You asked</p>
-            <p className="text-lg text-[#18181b] font-medium">{question}</p>
-          </div>
+      <div className="max-w-3xl mx-auto">
+        {/* Question as subtle header */}
+        <p className="text-sm text-[#71717a] italic mb-6">
+          "{question}"
+        </p>
+
+        {/* AI Response - Hero element */}
+        <div className="bg-white border border-[#e7e5e4] rounded-2xl px-6 py-5">
+          <p className="text-xs text-[#8b5cf6] mb-3 font-medium">Sean</p>
+          {answer ? (
+            <p className="text-lg text-[#18181b] leading-relaxed whitespace-pre-wrap">
+              {answer}
+            </p>
+          ) : (
+            <div className="flex space-x-1 py-2">
+              <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce" />
+              <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce [animation-delay:0.1s]" />
+              <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce [animation-delay:0.2s]" />
+            </div>
+          )}
         </div>
 
-        {/* AI Response */}
-        <div className="flex justify-start">
-          <div className="max-w-[85%] bg-white border border-[#e7e5e4] rounded-2xl px-5 py-4">
-            <p className="text-xs text-[#8b5cf6] mb-2 font-medium">Sean</p>
-            {answer ? (
-              <p className="text-base text-[#18181b] leading-relaxed whitespace-pre-wrap">
-                {answer}
-              </p>
-            ) : (
-              <div className="flex space-x-1 py-2">
-                <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce [animation-delay:0.1s]" />
-                <div className="w-2 h-2 bg-[#71717a] rounded-full animate-bounce [animation-delay:0.2s]" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Follow-up Questions */}
+        {/* Follow-up Questions or Finish Button */}
         {!isStreaming && answer && (
-          <div className="pt-6 space-y-4">
-            <p className="text-sm text-[#71717a]">Continue the conversation:</p>
-            <SuggestedQuestions
-              questions={followUpQuestions}
-              onSelect={onFollowUp}
-              disabled={isStreaming}
-            />
-            <button
-              onClick={onAskDifferent}
-              className="w-full text-center py-3 text-[#71717a] hover:text-[#18181b] transition-colors"
-            >
-              Or ask something different
-            </button>
-          </div>
+          isLastQuestion ? (
+            <div className="pt-8">
+              <button
+                onClick={onFinish}
+                className="w-full py-4 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-150"
+              >
+                Finish Interview
+              </button>
+            </div>
+          ) : (
+            <div className="pt-6 space-y-4">
+              <p className="text-sm text-[#71717a]">Continue the conversation:</p>
+              <SuggestedQuestions
+                questions={followUpQuestions}
+                onSelect={onFollowUp}
+                disabled={isStreaming}
+              />
+              <button
+                onClick={onAskDifferent}
+                className="w-full text-center py-3 text-[#71717a] hover:text-[#18181b] transition-colors"
+              >
+                Or ask something different
+              </button>
+            </div>
+          )
         )}
       </div>
     </motion.div>

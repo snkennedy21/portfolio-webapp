@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import TransitionWrapper, { TransitionDirection } from './TransitionWrapper';
+import AnimatedBorder from './AnimatedBorder';
+import { useSuccessSound } from '@/hooks/useSuccessSound';
 
 interface LandingScreenProps {
   onBegin: () => void;
@@ -8,6 +11,20 @@ interface LandingScreenProps {
 }
 
 export default function LandingScreen({ onBegin, direction }: LandingScreenProps) {
+  const [isSelected, setIsSelected] = useState(false);
+  const playSound = useSuccessSound();
+
+  const handleClick = () => {
+    if (isSelected) return;
+
+    setIsSelected(true);
+    playSound();
+
+    setTimeout(() => {
+      onBegin();
+    }, 700);
+  };
+
   return (
     <TransitionWrapper direction={direction} className="z-20">
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#fafaf9] px-4">
@@ -20,12 +37,20 @@ export default function LandingScreen({ onBegin, direction }: LandingScreenProps
             You&apos;re about to interview Sean Kennedy.
           </p>
 
-          <button
-            onClick={onBegin}
-            className="mt-8 px-8 py-3 bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white text-lg font-medium rounded-lg hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-200"
-          >
-            Begin Interview
-          </button>
+          <div className="mt-8">
+            <button
+              onClick={handleClick}
+              disabled={isSelected}
+              className={`relative px-8 py-3 rounded-lg border bg-white text-[#18181b] text-lg font-medium transition-all duration-300 disabled:cursor-not-allowed ${
+                isSelected
+                  ? 'border-transparent'
+                  : 'border-[#e7e5e4] hover:bg-[#f5f5f4] hover:border-[#22d3ee]'
+              }`}
+            >
+              Begin Interview
+              <AnimatedBorder isVisible={isSelected} />
+            </button>
+          </div>
         </div>
       </div>
     </TransitionWrapper>

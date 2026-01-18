@@ -4,17 +4,22 @@ import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSuccessSound } from '@/hooks/useSuccessSound';
 import AnimatedBorder from './AnimatedBorder';
+import ProgressBar from './ProgressBar';
 
 interface InterviewShellProps {
   children: ReactNode;
   onSubmitQuestion: (question: string) => void;
   isLoading: boolean;
+  questionCount: number;
+  totalQuestions: number;
 }
 
 export default function InterviewShell({
   children,
   onSubmitQuestion,
   isLoading,
+  questionCount,
+  totalQuestions,
 }: InterviewShellProps) {
   const [input, setInput] = useState('');
   const [showCheckmark, setShowCheckmark] = useState(false);
@@ -37,6 +42,13 @@ export default function InterviewShell({
 
   return (
     <div className="flex flex-col h-screen bg-[#fafaf9]">
+      {/* Progress Bar Header */}
+      <div className="border-b border-[#e7e5e4] bg-white px-4 py-3">
+        <div className="max-w-3xl mx-auto">
+          <ProgressBar current={questionCount} total={totalQuestions} />
+        </div>
+      </div>
+
       {/* Animated Content Area */}
       <div className="flex-1 overflow-hidden relative">
         {children}

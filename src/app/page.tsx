@@ -10,9 +10,10 @@ import QuestionContent from '@/components/QuestionContent';
 import ResponseContent from '@/components/ResponseContent';
 import HistoryMenu from '@/components/HistoryMenu';
 import TransitionWrapper from '@/components/TransitionWrapper';
+import InterviewComplete from '@/components/InterviewComplete';
 
 type AppState = 'landing' | 'interview';
-type ContentState = 'questions' | 'response';
+type ContentState = 'questions' | 'response' | 'complete';
 
 interface QAPair {
   id: string;
@@ -27,6 +28,8 @@ const initialQuestions = [
   "What's your experience with React?",
   'Why should we hire you?',
 ];
+
+const TOTAL_QUESTIONS = 3;
 
 const followUpQuestions: Record<string, string[]> = {
   default: [
@@ -143,6 +146,20 @@ export default function Home() {
     setContentState('questions');
   }, []);
 
+  const handleFinish = useCallback(() => {
+    setContentState('complete');
+  }, []);
+
+  const handleRestart = useCallback(() => {
+    setHistory([]);
+    setActiveQuestion('');
+    setActiveAnswer('');
+    setViewingHistoryItem(null);
+    setCurrentFollowUps(initialQuestions);
+    setContentState('questions');
+    setResponseKey(0);
+  }, []);
+
   const handleOpenHistory = useCallback(() => {
     setIsHistoryOpen(true);
   }, []);
@@ -181,6 +198,8 @@ export default function Home() {
             <InterviewShell
               onSubmitQuestion={handleAskQuestion}
               isLoading={isStreaming}
+              questionCount={history.length}
+              totalQuestions={TOTAL_QUESTIONS}
             >
               <AnimatePresence mode="wait">
                 {contentState === 'questions' && (
@@ -201,6 +220,16 @@ export default function Home() {
                     followUpQuestions={currentFollowUps}
                     onFollowUp={handleFollowUp}
                     onAskDifferent={handleAskDifferent}
+                    isLastQuestion={history.length >= TOTAL_QUESTIONS}
+                    onFinish={handleFinish}
+                  />
+                )}
+
+                {contentState === 'complete' && (
+                  <InterviewComplete
+                    key="complete"
+                    totalQuestions={TOTAL_QUESTIONS}
+                    onRestart={handleRestart}
                   />
                 )}
               </AnimatePresence>
