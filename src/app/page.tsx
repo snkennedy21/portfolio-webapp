@@ -57,7 +57,6 @@ export default function Home() {
   const [activeAnswer, setActiveAnswer] = useState<string>('');
   const [currentFollowUps, setCurrentFollowUps] = useState<string[]>(initialQuestions);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [viewingHistoryItem, setViewingHistoryItem] = useState<QAPair | null>(null);
   const [responseKey, setResponseKey] = useState(0);
 
   const { messages, sendMessage, status } = useChat({
@@ -100,7 +99,7 @@ export default function Home() {
 
   // Save to history when response is complete
   useEffect(() => {
-    if (contentState === 'response' && !isStreaming && activeAnswer && activeQuestion && !viewingHistoryItem) {
+    if (contentState === 'response' && !isStreaming && activeAnswer && activeQuestion) {
       const exists = history.some(
         (item) => item.question === activeQuestion && item.answer === activeAnswer
       );
@@ -116,7 +115,7 @@ export default function Home() {
         ]);
       }
     }
-  }, [contentState, isStreaming, activeAnswer, activeQuestion, history, viewingHistoryItem]);
+  }, [contentState, isStreaming, activeAnswer, activeQuestion, history]);
 
   const handleBeginInterview = useCallback(() => {
     setAppState('interview');
@@ -126,7 +125,6 @@ export default function Home() {
     (question: string) => {
       setActiveQuestion(question);
       setActiveAnswer('');
-      setViewingHistoryItem(null);
       setResponseKey((prev) => prev + 1); // Increment key to trigger animation
       setContentState('response');
       sendMessage({ text: question });
@@ -142,7 +140,6 @@ export default function Home() {
   );
 
   const handleAskDifferent = useCallback(() => {
-    setViewingHistoryItem(null);
     setContentState('questions');
   }, []);
 
@@ -154,7 +151,6 @@ export default function Home() {
     setHistory([]);
     setActiveQuestion('');
     setActiveAnswer('');
-    setViewingHistoryItem(null);
     setCurrentFollowUps(initialQuestions);
     setContentState('questions');
     setResponseKey(0);
@@ -168,19 +164,6 @@ export default function Home() {
     setIsHistoryOpen(false);
   }, []);
 
-  const handleSelectHistoryItem = useCallback((id: string) => {
-    const item = history.find((h) => h.id === id);
-    if (item) {
-      setViewingHistoryItem(item);
-      setActiveQuestion(item.question);
-      setActiveAnswer(item.answer);
-      setContentState('response');
-    }
-  }, [history]);
-
-  const displayAnswer = viewingHistoryItem ? viewingHistoryItem.answer : activeAnswer;
-  const displayQuestion = viewingHistoryItem ? viewingHistoryItem.question : activeQuestion;
-  const isViewingHistory = viewingHistoryItem !== null;
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -200,6 +183,9 @@ export default function Home() {
               isLoading={isStreaming}
               questionCount={history.length}
               totalQuestions={TOTAL_QUESTIONS}
+              onOpenHistory={handleOpenHistory}
+              hasHistory={history.length > 0}
+              hideInput={contentState === 'complete'}
             >
               <AnimatePresence mode="wait">
                 {contentState === 'questions' && (
@@ -214,9 +200,9 @@ export default function Home() {
                 {contentState === 'response' && (
                   <ResponseContent
                     key={`response-${responseKey}`}
-                    question={displayQuestion}
-                    answer={displayAnswer}
-                    isStreaming={isStreaming && !isViewingHistory}
+                    question={activeQuestion}
+                    answer={activeAnswer}
+                    isStreaming={isStreaming}
                     followUpQuestions={currentFollowUps}
                     onFollowUp={handleFollowUp}
                     onAskDifferent={handleAskDifferent}
@@ -229,6 +215,7 @@ export default function Home() {
                   <InterviewComplete
                     key="complete"
                     totalQuestions={TOTAL_QUESTIONS}
+                    history={history}
                     onRestart={handleRestart}
                   />
                 )}
@@ -242,7 +229,6 @@ export default function Home() {
         isOpen={isHistoryOpen}
         onClose={handleCloseHistory}
         history={history}
-        onSelectItem={handleSelectHistoryItem}
       />
     </main>
   );

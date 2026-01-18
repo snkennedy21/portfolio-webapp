@@ -2,10 +2,18 @@
 
 import { motion } from 'framer-motion';
 import { useSuccessSound } from '@/hooks/useSuccessSound';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+
+interface QAPair {
+  id: string;
+  question: string;
+  answer: string;
+  timestamp: Date;
+}
 
 interface InterviewCompleteProps {
   totalQuestions: number;
+  history: QAPair[];
   onRestart?: () => void;
 }
 
@@ -27,6 +35,7 @@ const contentVariants = {
 
 export default function InterviewComplete({
   totalQuestions,
+  history,
   onRestart,
 }: InterviewCompleteProps) {
   const playSound = useSuccessSound();
@@ -36,9 +45,33 @@ export default function InterviewComplete({
     playSound();
   }, [playSound]);
 
+  const generateTranscript = useCallback(() => {
+    const header = `Interview Transcript\nDate: ${new Date().toLocaleDateString()}\nCandidate: Sean Kennedy\n\n${'='.repeat(50)}\n\n`;
+
+    const content = history
+      .map(
+        (qa, index) =>
+          `Q${index + 1}: ${qa.question}\n\nSean: ${qa.answer}\n\n${'-'.repeat(50)}\n\n`
+      )
+      .join('');
+
+    return header + content;
+  }, [history]);
+
+  const handleDownload = useCallback(() => {
+    const transcript = generateTranscript();
+    const blob = new Blob([transcript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `interview-transcript-${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [generateTranscript]);
+
   return (
     <motion.div
-      className="absolute inset-0 flex items-center justify-center p-6"
+      className="absolute inset-0 overflow-y-auto p-6"
       variants={contentVariants}
       initial="initial"
       animate="animate"
@@ -48,6 +81,7 @@ export default function InterviewComplete({
         ease: [0.4, 0, 0.2, 1],
       }}
     >
+      <div className="min-h-full flex items-center justify-center">
       <div className="max-w-lg mx-auto text-center">
         {/* Celebration icon */}
         <motion.div
@@ -117,18 +151,31 @@ export default function InterviewComplete({
           </p>
         </motion.div>
 
-        {/* CTA */}
-        {onRestart && (
+        {/* Actions */}
+        <div className="space-y-3">
           <motion.button
-            onClick={onRestart}
-            className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-150"
+            onClick={handleDownload}
+            className="w-full py-3 rounded-lg border bg-white text-[#18181b] font-medium transition-all duration-300 border-[#e7e5e4] hover:bg-[#f5f5f4] hover:border-[#22d3ee]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.55 }}
           >
-            Start Over
+            Download Transcript
           </motion.button>
-        )}
+
+          {onRestart && (
+            <motion.button
+              onClick={onRestart}
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-150"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              Start Over
+            </motion.button>
+          )}
+        </div>
+      </div>
       </div>
     </motion.div>
   );

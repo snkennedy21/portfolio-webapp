@@ -12,6 +12,9 @@ interface InterviewShellProps {
   isLoading: boolean;
   questionCount: number;
   totalQuestions: number;
+  onOpenHistory: () => void;
+  hasHistory: boolean;
+  hideInput?: boolean;
 }
 
 export default function InterviewShell({
@@ -20,6 +23,9 @@ export default function InterviewShell({
   isLoading,
   questionCount,
   totalQuestions,
+  onOpenHistory,
+  hasHistory,
+  hideInput = false,
 }: InterviewShellProps) {
   const [input, setInput] = useState('');
   const [showCheckmark, setShowCheckmark] = useState(false);
@@ -49,12 +55,37 @@ export default function InterviewShell({
         </div>
       </div>
 
+      {/* History Button - Fixed Position */}
+      {hasHistory && (
+        <button
+          onClick={onOpenHistory}
+          className="fixed top-4 right-4 p-2 rounded-lg bg-white border border-[#e7e5e4] hover:bg-[#f5f5f4] hover:border-[#22d3ee] transition-colors shadow-sm z-30"
+          title="View conversation history"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-5 h-5 text-[#71717a]"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+        </button>
+      )}
+
       {/* Animated Content Area */}
-      <div className="flex-1 overflow-hidden relative">
+      <div className={`flex-1 relative ${hideInput ? 'overflow-visible' : 'overflow-hidden'}`}>
         {children}
       </div>
 
       {/* Fixed Input */}
+      {!hideInput && (
       <div className="border-t border-[#e7e5e4] bg-white p-4">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit}>
@@ -135,6 +166,7 @@ export default function InterviewShell({
           </form>
         </div>
       </div>
+      )}
     </div>
   );
 }

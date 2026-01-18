@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import SuggestedQuestions from './SuggestedQuestions';
 
@@ -60,7 +61,16 @@ export default function ResponseContent({
 
         {/* AI Response - Hero element */}
         <div className="bg-white border border-[#e7e5e4] rounded-2xl px-6 py-5">
-          <p className="text-xs text-[#8b5cf6] mb-3 font-medium">Sean</p>
+          <div className="flex items-center gap-2 mb-3">
+            <Image
+              src="/profile-picture.png"
+              alt="Sean Kennedy"
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+            <span className="text-xs text-[#8b5cf6] font-medium">Sean</span>
+          </div>
           {answer ? (
             <p className="text-lg text-[#18181b] leading-relaxed whitespace-pre-wrap">
               {answer}
