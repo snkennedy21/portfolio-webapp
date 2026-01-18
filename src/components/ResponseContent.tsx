@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import SuggestedQuestions from './SuggestedQuestions';
@@ -42,11 +43,18 @@ export default function ResponseContent({
   isLastQuestion = false,
   onFinish,
 }: ResponseContentProps) {
+  const [isFinishing, setIsFinishing] = useState(false);
   const playSound = useSuccessSound();
 
   const handleFinish = () => {
+    if (isFinishing) return;
+
+    setIsFinishing(true);
     playSound();
-    onFinish?.();
+
+    setTimeout(() => {
+      onFinish?.();
+    }, 700);
   };
   return (
     <motion.div
@@ -95,12 +103,23 @@ export default function ResponseContent({
         {!isStreaming && answer && (
           isLastQuestion ? (
             <div className="pt-8">
-              <button
+              <motion.button
                 onClick={handleFinish}
-                className="w-full py-4 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-150"
+                disabled={isFinishing}
+                className={`relative w-full py-4 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium transition-all duration-150 disabled:cursor-not-allowed ${
+                  isFinishing ? '' : 'hover:from-[#06b6d4] hover:to-[#7c3aed]'
+                }`}
+                animate={isFinishing ? {
+                  scale: [1, 1.15, 0.9, 1.05, 1],
+                } : {}}
+                transition={{
+                  duration: 0.6,
+                  ease: 'easeOut',
+                  times: [0, 0.2, 0.5, 0.8, 1],
+                }}
               >
                 Finish Interview
-              </button>
+              </motion.button>
             </div>
           ) : (
             <div className="pt-6 space-y-4">

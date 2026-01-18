@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useCelebrationSound } from '@/hooks/useCelebrationSound';
 
 interface QAPair {
   id: string;
@@ -32,11 +33,46 @@ const contentVariants = {
   },
 };
 
+// Generate confetti particles once on mount
+const generateConfettiParticles = () => {
+  const colors = [
+    '#22d3ee', '#8b5cf6', '#f472b6', '#fbbf24', '#34d399',
+    '#fb7185', '#a78bfa', '#67e8f9', '#f97316', '#84cc16',
+    '#06b6d4', '#ec4899', '#eab308', '#10b981', '#6366f1'
+  ];
+  const shapes = ['rounded-full', 'rounded-sm', 'rounded-none'];
+
+  return [...Array(100)].map((_, i) => ({
+    id: i,
+    color: colors[i % colors.length],
+    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    size: 4 + Math.random() * 8,
+    startX: Math.random() * 100, // percentage across screen
+    delay: Math.random() * 2, // stagger the start
+    duration: 2 + Math.random() * 2, // fall duration
+    rotation: Math.random() * 720 - 360,
+    swayAmount: 20 + Math.random() * 40, // horizontal sway
+  }));
+};
+
+const confettiParticles = generateConfettiParticles();
+
 export default function InterviewComplete({
   totalQuestions,
   history,
   onRestart,
 }: InterviewCompleteProps) {
+  const playCelebration = useCelebrationSound();
+
+  // Play celebration sound when component mounts
+  useEffect(() => {
+    // Small delay to sync with the animation
+    const timer = setTimeout(() => {
+      playCelebration();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [playCelebration]);
+
   const generateTranscript = useCallback(() => {
     const header = `Interview Transcript\nDate: ${new Date().toLocaleDateString()}\nCandidate: Sean Kennedy\n\n${'='.repeat(50)}\n\n`;
 
@@ -73,7 +109,46 @@ export default function InterviewComplete({
         ease: [0.4, 0, 0.2, 1],
       }}
     >
-      <div className="min-h-full flex items-center justify-center">
+      {/* Confetti rain */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {confettiParticles.map((particle) => (
+          <motion.div
+            key={`confetti-rain-${particle.id}`}
+            className={`absolute ${particle.shape}`}
+            style={{
+              width: particle.size,
+              height: particle.size * (particle.shape === 'rounded-none' ? 0.4 : 1),
+              backgroundColor: particle.color,
+              left: `${particle.startX}%`,
+              top: -20,
+            }}
+            initial={{
+              y: 0,
+              x: 0,
+              rotate: 0,
+              opacity: 1,
+            }}
+            animate={{
+              y: window?.innerHeight ? window.innerHeight + 100 : 1000,
+              x: [0, particle.swayAmount, -particle.swayAmount, particle.swayAmount / 2, 0],
+              rotate: particle.rotation,
+              opacity: [1, 1, 1, 0.8, 0],
+            }}
+            transition={{
+              duration: particle.duration,
+              delay: particle.delay,
+              ease: 'linear',
+              x: {
+                duration: particle.duration,
+                ease: 'easeInOut',
+                times: [0, 0.25, 0.5, 0.75, 1],
+              },
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="min-h-full flex items-center justify-center relative z-10">
       <div className="max-w-lg mx-auto text-center">
         {/* Celebration icon */}
         <motion.div
