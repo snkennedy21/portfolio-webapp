@@ -13,7 +13,7 @@ interface AnimatedBorderProps {
 
 export default function AnimatedBorder({
   isVisible,
-  color = '#22c55e',
+  color = '#818cf8',
   strokeWidth = 2,
   duration = 0.4,
   borderRadius = 8,

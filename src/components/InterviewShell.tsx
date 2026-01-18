@@ -73,7 +73,7 @@ export default function InterviewShell({
                     {showCheckmark ? (
                       <motion.div
                         key="checkmark"
-                        className="w-5 h-5 bg-[#22c55e] rounded-full flex items-center justify-center"
+                        className="w-5 h-5 bg-[#818cf8] rounded-full flex items-center justify-center"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}

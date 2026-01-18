@@ -61,7 +61,7 @@ export default function SuggestedQuestions({
             <AnimatePresence>
               {isSelected && (
                 <motion.div
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#22c55e] rounded-full flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#818cf8] rounded-full flex items-center justify-center"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
