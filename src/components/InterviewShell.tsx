@@ -6,6 +6,8 @@ import { useSuccessSound } from '@/hooks/useSuccessSound';
 import AnimatedBorder from './AnimatedBorder';
 import ProgressBar from './ProgressBar';
 
+type ResponseMode = 'graph' | 'ai';
+
 interface InterviewShellProps {
   children: ReactNode;
   onSubmitQuestion: (question: string) => void;
@@ -15,6 +17,8 @@ interface InterviewShellProps {
   onOpenHistory: () => void;
   hasHistory: boolean;
   hideInput?: boolean;
+  responseMode: ResponseMode;
+  onToggleMode: () => void;
 }
 
 export default function InterviewShell({
@@ -26,6 +30,8 @@ export default function InterviewShell({
   onOpenHistory,
   hasHistory,
   hideInput = false,
+  responseMode,
+  onToggleMode,
 }: InterviewShellProps) {
   const [input, setInput] = useState('');
   const [showCheckmark, setShowCheckmark] = useState(false);
@@ -50,8 +56,34 @@ export default function InterviewShell({
     <div className="flex flex-col h-screen bg-[#fafaf9]">
       {/* Progress Bar Header */}
       <div className="border-b border-[#e7e5e4] bg-white px-4 py-3">
-        <div className="max-w-3xl mx-auto">
-          <ProgressBar current={questionCount} total={totalQuestions} />
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <ProgressBar current={questionCount} total={totalQuestions} />
+          </div>
+          {/* Mode Toggle - Development Only */}
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={onToggleMode}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border border-[#e7e5e4] hover:border-[#22d3ee]"
+              title={responseMode === 'graph' ? 'Using pre-written responses' : 'Using AI responses'}
+            >
+              <span className={responseMode === 'graph' ? 'text-[#8b5cf6]' : 'text-[#71717a]'}>
+                Graph
+              </span>
+              <div className="relative w-8 h-4 bg-[#e7e5e4] rounded-full">
+                <div
+                  className={`absolute top-0.5 w-3 h-3 rounded-full transition-all duration-200 ${
+                    responseMode === 'ai'
+                      ? 'left-4 bg-[#22d3ee]'
+                      : 'left-0.5 bg-[#8b5cf6]'
+                  }`}
+                />
+              </div>
+              <span className={responseMode === 'ai' ? 'text-[#22d3ee]' : 'text-[#71717a]'}>
+                AI
+              </span>
+            </button>
+          )}
         </div>
       </div>
 

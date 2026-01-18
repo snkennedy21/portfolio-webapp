@@ -1,8 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useSuccessSound } from '@/hooks/useSuccessSound';
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 
 interface QAPair {
   id: string;
@@ -38,13 +37,6 @@ export default function InterviewComplete({
   history,
   onRestart,
 }: InterviewCompleteProps) {
-  const playSound = useSuccessSound();
-
-  useEffect(() => {
-    // Play a celebratory sound on mount
-    playSound();
-  }, [playSound]);
-
   const generateTranscript = useCallback(() => {
     const header = `Interview Transcript\nDate: ${new Date().toLocaleDateString()}\nCandidate: Sean Kennedy\n\n${'='.repeat(50)}\n\n`;
 

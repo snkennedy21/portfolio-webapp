@@ -11,10 +11,15 @@ import ResponseContent from '@/components/ResponseContent';
 import HistoryMenu from '@/components/HistoryMenu';
 import TransitionWrapper from '@/components/TransitionWrapper';
 import InterviewComplete from '@/components/InterviewComplete';
-import { getPrewrittenAnswer } from '@/lib/interview-qa';
+import {
+  getPrewrittenAnswer,
+  getFollowUpQuestions,
+  getInitialQuestions,
+} from '@/lib/interview-qa';
 
 type AppState = 'landing' | 'interview';
 type ContentState = 'questions' | 'response' | 'complete';
+type ResponseMode = 'graph' | 'ai';
 
 interface QAPair {
   id: string;
@@ -23,32 +28,7 @@ interface QAPair {
   timestamp: Date;
 }
 
-const initialQuestions = [
-  'Tell me about yourself',
-  'Walk me through a technical challenge you solved',
-  "What's your experience with React?",
-  'Why should we hire you?',
-];
-
 const TOTAL_QUESTIONS = 3;
-
-const followUpQuestions: Record<string, string[]> = {
-  default: [
-    'What got you into programming?',
-    'What are you most proud of building?',
-    "What are you looking for in your next role?",
-  ],
-  technical: [
-    'Can you tell me more about your experience with TypeScript?',
-    'How do you approach debugging complex issues?',
-    'What DevOps tools have you worked with?',
-  ],
-  background: [
-    'What was the transition from teaching to software like?',
-    'How does your philosophy background help you as a developer?',
-    'What keeps you motivated?',
-  ],
-};
 
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('landing');
@@ -56,10 +36,11 @@ export default function Home() {
   const [history, setHistory] = useState<QAPair[]>([]);
   const [activeQuestion, setActiveQuestion] = useState<string>('');
   const [activeAnswer, setActiveAnswer] = useState<string>('');
-  const [currentFollowUps, setCurrentFollowUps] = useState<string[]>(initialQuestions);
+  const [currentFollowUps, setCurrentFollowUps] = useState<string[]>(getInitialQuestions());
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [responseKey, setResponseKey] = useState(0);
   const [isUsingAI, setIsUsingAI] = useState(false);
+  const [responseMode, setResponseMode] = useState<ResponseMode>('graph');
 
   const { messages, sendMessage, status } = useChat({
     id: 'interview-chat',
@@ -67,9 +48,8 @@ export default function Home() {
       api: '/api/chat',
     }),
     onFinish: () => {
-      const categories = Object.keys(followUpQuestions);
-      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-      setCurrentFollowUps(followUpQuestions[randomCategory]);
+      // For AI responses, use generic follow-ups since we don't have contextual ones
+      setCurrentFollowUps(getInitialQuestions());
     },
     onError: (error) => {
       console.error('Chat error:', error);
@@ -130,23 +110,29 @@ export default function Home() {
       setResponseKey((prev) => prev + 1); // Increment key to trigger animation
       setContentState('response');
 
-      // Check for pre-written answer first
+      // In AI mode, always use AI
+      if (responseMode === 'ai') {
+        setIsUsingAI(true);
+        sendMessage({ text: question });
+        return;
+      }
+
+      // In Graph mode, check for pre-written answer first
       const prewrittenAnswer = getPrewrittenAnswer(question);
       if (prewrittenAnswer) {
         // Use pre-written answer (no AI)
         setIsUsingAI(false);
         setActiveAnswer(prewrittenAnswer);
-        // Update follow-ups
-        const categories = Object.keys(followUpQuestions);
-        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-        setCurrentFollowUps(followUpQuestions[randomCategory]);
+        // Get contextual follow-ups based on this question
+        const followUps = getFollowUpQuestions(question);
+        setCurrentFollowUps(followUps.length > 0 ? followUps : getInitialQuestions());
       } else {
-        // Fall back to AI for custom questions
+        // Fall back to AI for custom questions not in the graph
         setIsUsingAI(true);
         sendMessage({ text: question });
       }
     },
-    [sendMessage]
+    [sendMessage, responseMode]
   );
 
   const handleFollowUp = useCallback(
@@ -168,7 +154,7 @@ export default function Home() {
     setHistory([]);
     setActiveQuestion('');
     setActiveAnswer('');
-    setCurrentFollowUps(initialQuestions);
+    setCurrentFollowUps(getInitialQuestions());
     setContentState('questions');
     setResponseKey(0);
   }, []);
@@ -181,6 +167,9 @@ export default function Home() {
     setIsHistoryOpen(false);
   }, []);
 
+  const handleToggleMode = useCallback(() => {
+    setResponseMode((prev) => (prev === 'graph' ? 'ai' : 'graph'));
+  }, []);
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -203,6 +192,8 @@ export default function Home() {
               onOpenHistory={handleOpenHistory}
               hasHistory={history.length > 0}
               hideInput={contentState === 'complete'}
+              responseMode={responseMode}
+              onToggleMode={handleToggleMode}
             >
               <AnimatePresence mode="wait">
                 {contentState === 'questions' && (

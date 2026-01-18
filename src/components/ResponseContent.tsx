@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import SuggestedQuestions from './SuggestedQuestions';
+import { useSuccessSound } from '@/hooks/useSuccessSound';
 
 interface ResponseContentProps {
   question: string;
@@ -41,6 +42,12 @@ export default function ResponseContent({
   isLastQuestion = false,
   onFinish,
 }: ResponseContentProps) {
+  const playSound = useSuccessSound();
+
+  const handleFinish = () => {
+    playSound();
+    onFinish?.();
+  };
   return (
     <motion.div
       className="absolute inset-0 overflow-y-auto p-6"
@@ -89,7 +96,7 @@ export default function ResponseContent({
           isLastQuestion ? (
             <div className="pt-8">
               <button
-                onClick={onFinish}
+                onClick={handleFinish}
                 className="w-full py-4 rounded-lg bg-gradient-to-r from-[#22d3ee] to-[#8b5cf6] text-white font-medium hover:from-[#06b6d4] hover:to-[#7c3aed] transition-all duration-150"
               >
                 Finish Interview
