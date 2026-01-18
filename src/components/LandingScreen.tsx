@@ -37,7 +37,7 @@ export default function LandingScreen({ onBegin, direction }: LandingScreenProps
             You&apos;re about to interview Sean Kennedy.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-center gap-4">
             <button
               onClick={handleClick}
               disabled={isSelected}

@@ -40,12 +40,12 @@ export function useCelebrationSound() {
         oscillator.stop(startTime + duration);
       };
 
-      // Play a celebratory ascending arpeggio (C major chord ascending)
-      // C5 -> E5 -> G5 -> C6 (octave higher)
-      playTone(523.25, now, 0.2, 0.15);        // C5
-      playTone(659.25, now + 0.12, 0.2, 0.18); // E5
-      playTone(783.99, now + 0.24, 0.2, 0.2);  // G5
-      playTone(1046.5, now + 0.36, 0.4, 0.25); // C6 (longer, louder for finale)
+      // Smooth ascending scale
+      playTone(783.99, now, 0.3, 0.18);        // G5
+      playTone(1046.5, now + 0.2, 0.35, 0.2);  // C6
+      playTone(1318.5, now + 0.45, 0.35, 0.22); // E6
+      playTone(1568.0, now + 0.65, 0.35, 0.22); // G6
+      playTone(2093.0, now + 0.9, 0.8, 0.25);  // C7 (finale)
 
     } catch (error) {
       // Silently fail if Web Audio API isn't available

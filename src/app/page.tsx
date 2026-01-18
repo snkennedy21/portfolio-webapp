@@ -28,7 +28,7 @@ interface QAPair {
   timestamp: Date;
 }
 
-const TOTAL_QUESTIONS = 1;
+const TOTAL_QUESTIONS = 5;
 
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('landing');
