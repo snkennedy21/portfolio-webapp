@@ -11,6 +11,7 @@ import ResponseContent from '@/components/ResponseContent';
 import HistoryMenu from '@/components/HistoryMenu';
 import TransitionWrapper from '@/components/TransitionWrapper';
 import InterviewComplete from '@/components/InterviewComplete';
+import { getPrewrittenAnswer } from '@/lib/interview-qa';
 
 type AppState = 'landing' | 'interview';
 type ContentState = 'questions' | 'response' | 'complete';
@@ -58,6 +59,7 @@ export default function Home() {
   const [currentFollowUps, setCurrentFollowUps] = useState<string[]>(initialQuestions);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [responseKey, setResponseKey] = useState(0);
+  const [isUsingAI, setIsUsingAI] = useState(false);
 
   const { messages, sendMessage, status } = useChat({
     id: 'interview-chat',
@@ -74,7 +76,7 @@ export default function Home() {
     },
   });
 
-  const isStreaming = status === 'submitted' || status === 'streaming';
+  const isStreaming = isUsingAI && (status === 'submitted' || status === 'streaming');
 
   const getMessageContent = useCallback((message: (typeof messages)[0]) => {
     if (!message.parts || message.parts.length === 0) {
@@ -86,16 +88,16 @@ export default function Home() {
       .join('');
   }, []);
 
-  // Watch for new assistant messages and update activeAnswer
+  // Watch for new assistant messages and update activeAnswer (only when using AI)
   useEffect(() => {
-    if (messages.length > 0) {
+    if (isUsingAI && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'assistant') {
         const content = getMessageContent(lastMessage);
         setActiveAnswer(content);
       }
     }
-  }, [messages, getMessageContent]);
+  }, [messages, getMessageContent, isUsingAI]);
 
   // Save to history when response is complete
   useEffect(() => {
@@ -127,7 +129,22 @@ export default function Home() {
       setActiveAnswer('');
       setResponseKey((prev) => prev + 1); // Increment key to trigger animation
       setContentState('response');
-      sendMessage({ text: question });
+
+      // Check for pre-written answer first
+      const prewrittenAnswer = getPrewrittenAnswer(question);
+      if (prewrittenAnswer) {
+        // Use pre-written answer (no AI)
+        setIsUsingAI(false);
+        setActiveAnswer(prewrittenAnswer);
+        // Update follow-ups
+        const categories = Object.keys(followUpQuestions);
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        setCurrentFollowUps(followUpQuestions[randomCategory]);
+      } else {
+        // Fall back to AI for custom questions
+        setIsUsingAI(true);
+        sendMessage({ text: question });
+      }
     },
     [sendMessage]
   );
