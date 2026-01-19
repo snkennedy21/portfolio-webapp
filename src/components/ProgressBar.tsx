@@ -15,7 +15,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
     <div className="w-full">
       <div className="flex justify-between items-center mb-2">
         <span className="text-sm text-[#71717a]">
-          {isComplete ? 'Interview Complete!' : `Question ${current} of ${total}`}
+          {isComplete ? 'Interview Complete!' : `${current} of ${total} complete`}
         </span>
         <span className="text-sm font-medium text-[#18181b]">
           {Math.round(progress)}%
